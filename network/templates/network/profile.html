@@ -1,0 +1,48 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+
+<h1 id="title" class="m-2">
+    <span id="user-title">{{curUser}}</span>
+        <span>
+            {% if user != curUser and user.is_authenticated %}
+                {% if user in curUser.followers.all %}
+                    <button id="follow" class="btn border border-secondary" onclick="updateFollow(this)">Unollow</button>
+                {% else %}
+                    <button id="follow" class="btn btn-primary mx-3" onclick="updateFollow(this)">Follow</button>
+                {% endif %}
+
+            {% endif %}
+        </span>
+</h1>
+<div id="profile-info" class="mx-4">
+    <h5 id="follower-count"> {{curUser.followers.count}} followers</h5>
+</div>
+<div id="posts">
+    {% for post in posts %}
+        <div id="post{{post.id}}" class="card w-100 m-3">
+            <div class="card-body">
+                <h4><a class="card-title text-dark" href="{% url 'profile' post.author.username %}">{{ post.author.username }}</a></h4>
+                {% if user == post.author %}
+                    <div id="edit-div{{post.id}}">
+                        <h5><button id="edit{{post.id}}" onclick="editPost(this)" href="#" class="btn border border-primary" >Edit</button></h5>
+                        <textarea id="edit-area{{post.id}}" style="display: none; width: 100%">{{post.body}}</textarea>
+                    </div>
+                {% endif %}                      
+                <h6 id="body{{post.id}}">{{post.body}}</h6>
+                <p class="text-secondary">{{post.timestamp}}</p>
+                <div id="like-div{{post.id}}">
+                    <p id="numLikes{{post.id}}" class="text-secondary">{{post.likes_count}}</p>
+                    {% if user != post.author and user.is_authenticated %}
+                        {% if user in post.likes.all %}
+                            <button id="like{{post.id}}" onclick="updateLikes(this)" class="btn border border-danger">Unlike</button>
+                        {% else %}
+                            <button id="like{{post.id}}" onclick="updateLikes(this)" class="btn border border-success">Like</button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div> 
+    {% endfor %}
+</div>
+{% endblock %}
